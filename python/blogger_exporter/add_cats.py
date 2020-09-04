@@ -18,9 +18,9 @@ filenames = [os.path.split(item)[1] for item in filenames]
 file_mapping = dict(zip(filenames,files))
 
 with open('categories.yaml') as f:
-    categories = yaml.load(f)
+    categories = yaml.load(f,Loader=yaml.FullLoader)
 with open('titles.yaml') as f:
-    titles = yaml.load(f)
+    titles = yaml.load(f,Loader=yaml.FullLoader)
 
 
 
