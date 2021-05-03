@@ -23,19 +23,12 @@ filenames = [os.path.split(item)[1] for item in filenames]
 
 file_mapping = dict(zip(filenames,files))
 
-with open(os.path.join(root_path,'categories.yaml')) as f:
-    categories = yaml.load(f,Loader=yaml.FullLoader)
-with open(os.path.join(root_path,'titles.yaml')) as f:
-    titles = yaml.load(f,Loader=yaml.FullLoader)
+with open(os.path.join(root_path,'page_info.yaml')) as f:
+    page_info = yaml.load(f,Loader=yaml.FullLoader)
 
-
-
-for key,value in categories.items():    
-    dict1 = {'tags':categories[key]}
-    dict2 = {'title':titles[key]}
+for key,value in page_info.items():    
     with open(file_mapping[key],'r+') as f:
-#        f.seek(0)
         content = f.read()
         f.seek(0)
-        f.write('---\n'+yaml.dump(dict2)+yaml.dump(dict1)+'---\n'+content)
+        f.write('---\n'+yaml.dump(page_info[key])+'---\n'+content)
         
