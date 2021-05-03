@@ -46,7 +46,12 @@ def get_post_html(post):
 
 #filename = 'blog-09-05-2019.xml'
 #filename = 'blog-12-27-2019.xml'    
-filename = 'blog-12-30-2019.xml'    
+# filename = 'blog-12-30-2019.xml'    
+filename = '/home/danaukes/projects/project_embedded_systems_class/_source/blog-04-30-2021.xml'    
+root_path,filename_stripped = os.path.split(filename)
+export_folder = os.path.join(root_path,'export')
+image_folder= os.path.join(export_folder,'figures')
+
     
 with open(filename,'rb') as f:
     output = f.readlines()
@@ -151,23 +156,32 @@ for ii,item in enumerate(srcs):
 #fnames.sort()
 
 
-if os.path.exists('export'):
-    shutil.rmtree('export')
+if os.path.exists(export_folder):
+    shutil.rmtree(export_folder)
 time.sleep(1)
-os.mkdir('export')
-os.mkdir('export/figures')
+os.mkdir(export_folder)
+os.mkdir(image_folder)
+
+errors = []
 
 for ii,(key,value) in enumerate(mapping):
-    r = requests.get(key) # create HTTP response object 
-    with open('export/figures/'+value,'wb') as f: 
-        f.write(r.content)     
-    img = PIL.Image.open('export/figures/'+value)
-    itype = imtypemapping[img.format.lower()]
-    del img
-    froot,ctype = os.path.splitext(value)
-    new = froot+'.'+itype.lower()
-    os.rename('export/figures/'+value,'export/figures/'+froot+'.'+itype.lower())
-    mapping[ii][1] = new
+    try:
+        r = requests.get(key) # create HTTP response object 
+        if r.ok:
+            with open(os.path.join(image_folder,value),'wb') as f: 
+                f.write(r.content)     
+            img = PIL.Image.open(os.path.join(image_folder,value))
+            itype = imtypemapping[img.format.lower()]
+            del img
+            froot,ctype = os.path.splitext(value)
+            new = froot+'.'+itype.lower()
+            os.rename(os.path.join(image_folder,value),os.path.join(image_folder,froot+'.'+itype.lower()))
+            mapping[ii][1] = new
+        else:
+            errors.append(('404',key,value))
+    except requests.exceptions.InvalidSchema as e:
+        errors.append((e,key,value))
+        
 
 mapping_fwd = dict([tuple(item) for item in mapping])
     
@@ -186,6 +200,10 @@ for post,title in zip(posts,titles):
             pass
     textb2 = et.tostring(root2, pretty_print=True)
     filename = cleantext(title)
-    with open('export/'+filename+'.html','wb') as f:
+    with open(os.path.join(export_folder,filename+'.html'),'wb') as f:
 #        f.writelines(textb)
         f.write(textb2)
+        
+import yaml
+with open(os.path.join(root_path,'404.yml'),'w') as f:
+    yaml.dump(errors,f)

@@ -46,7 +46,11 @@ def get_post_html(post):
     
 #filename = 'blog-09-05-2019.xml'
 #filename = 'blog-12-27-2019.xml'    
-filename = 'blog-12-30-2019.xml'    
+
+filename = '/home/danaukes/projects/project_embedded_systems_class/_source/blog-04-30-2021.xml'    
+root_path,filename_stripped = os.path.split(filename)
+export_folder = os.path.join(root_path,'export')
+image_folder= os.path.join(export_folder,'figures')
     
     
 with open(filename,'rb') as f:
@@ -143,8 +147,9 @@ for p,filename,title in zip(posts,filenames,titles):
 
 mapping = dict(mapping)
 
-with open('titles.yaml','w') as f:
+with open(os.path.join(root_path,'titles.yaml'),'w') as f:
     yaml.dump(mapping,f)
+    
 #    
 #for post,filename in zip(posts,filenames):
 #    item = post.find('{http://www.w3.org/2005/Atom}content')
