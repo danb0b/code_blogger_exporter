@@ -13,6 +13,8 @@ import PIL.Image
 import shutil
 import yaml
 
+grab_images = False
+
 imtypemapping= {'jpeg':'jpg','png':'png'}
 
 def cleantext(text_in):
@@ -157,23 +159,28 @@ if __name__=='__main__':
     
     errors = []
     
-    for key in src_dictionary.keys():
-        try:
-            r = requests.get(key) # create HTTP response object 
-            if r.ok:
-                with open(os.path.join(image_folder,src_dictionary[key]['filename']),'wb') as f: 
-                    f.write(r.content)     
-                img = PIL.Image.open(os.path.join(image_folder,src_dictionary[key]['filename']))
-                itype = imtypemapping[img.format.lower()]
-                del img
-                froot,ctype = os.path.splitext(src_dictionary[key]['filename'])
-                new = froot+'.'+itype.lower()
-                os.rename(os.path.join(image_folder,src_dictionary[key]['filename']),os.path.join(image_folder,froot+'.'+itype.lower()))
-                src_dictionary[key]['filename'] = new
-            else:
-                errors.append(('404',key,src_dictionary[key]))
-        except requests.exceptions.InvalidSchema as e:
-            errors.append((e,key,src_dictionary[key]))
+    
+    if grab_images:
+        for key in src_dictionary.keys():
+            try:
+                r = requests.get(key) # create HTTP response object 
+                if r.ok:
+                    with open(os.path.join(image_folder,src_dictionary[key]['filename']),'wb') as f: 
+                        f.write(r.content)     
+                    img = PIL.Image.open(os.path.join(image_folder,src_dictionary[key]['filename']))
+                    itype = imtypemapping[img.format.lower()]
+                    del img
+                    froot,ctype = os.path.splitext(src_dictionary[key]['filename'])
+                    new = froot+'.'+itype.lower()
+                    os.rename(os.path.join(image_folder,src_dictionary[key]['filename']),os.path.join(image_folder,froot+'.'+itype.lower()))
+                    src_dictionary[key]['filename'] = new
+                else:
+                    errors.append(('404',key,src_dictionary[key]))
+            except requests.exceptions.InvalidSchema as e:
+                errors.append((e,key,src_dictionary[key]))
+        import yaml
+        with open(os.path.join(root_path,'404.yml'),'w') as f:
+            yaml.dump(errors,f)
             
     
     # mapping_fwd = dict([tuple(item) for item in mapping])
@@ -197,9 +204,6 @@ if __name__=='__main__':
     #        f.writelines(textb)
             f.write(textb2)
             
-    import yaml
-    with open(os.path.join(root_path,'404.yml'),'w') as f:
-        yaml.dump(errors,f)
         
     page_info_mapping = []
     
