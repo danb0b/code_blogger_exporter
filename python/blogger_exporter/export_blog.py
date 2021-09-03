@@ -72,7 +72,8 @@ if __name__=='__main__':
     #filename = 'blog-09-05-2019.xml'
     #filename = 'blog-12-27-2019.xml'    
     # filename = 'blog-12-30-2019.xml'    
-    filename = '/home/danaukes/projects/project_embedded_systems_class/_source/blog-04-30-2021.xml'    
+    # filename = '/home/danaukes/projects/project_embedded_systems_class/_source/blog-04-30-2021.xml'    
+    filename = '/home/danaukes/projects/project_esd_website_source/ignore/_source/blog-04-30-2021.xml'
     root_path,filename_stripped = os.path.split(filename)
     export_folder = os.path.join(root_path,'export')
     image_folder= os.path.join(export_folder,'figures')
